@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">ChineseSpeechTrainer</string>
+    <string name="app_name">Chinese Speech Trainer</string>
+    <string name="company_name">© C0MPU73R PR09R4M CHARITY</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="reset">Reset</string>
+    <string name="notification_title">ChineseSpeechTrainer</string>
+    <string name="notification_message">Notification Message</string>
+    <string name="ticker_text">Ticker Text</string>
 </resources>
