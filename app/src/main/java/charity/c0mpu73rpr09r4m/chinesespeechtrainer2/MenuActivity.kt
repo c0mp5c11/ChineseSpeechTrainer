@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import charity.c0mpu73rpr09r4m.chinesespeechtrainer2.ui.theme.ChineseSpeechTrainerTheme
 
-class StartActivity : ComponentActivity() {
+class MenuActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -77,7 +77,7 @@ class StartActivity : ComponentActivity() {
             }
         }
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, MenuActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }, 3000)
     }
