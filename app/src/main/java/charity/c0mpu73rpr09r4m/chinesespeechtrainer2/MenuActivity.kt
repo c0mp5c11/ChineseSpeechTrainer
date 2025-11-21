@@ -1,84 +1,86 @@
 package charity.c0mpu73rpr09r4m.chinesespeechtrainer2
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import charity.c0mpu73rpr09r4m.chinesespeechtrainer2.ui.theme.ChineseSpeechTrainerTheme
 
 class MenuActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             ChineseSpeechTrainerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val fontFamily = FontFamily(Font(R.font.go3v2))
-
-                    Box(
-                        modifier = Modifier.padding(innerPadding)
-                            .fillMaxSize()
-                            .padding(16.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        )
-                        {
-                            Text(
-                                text = "Chinese Speech Trainer",
-                                fontSize = 32.sp,
-                                style = TextStyle(
-                                    fontFamily = fontFamily,
-                                    color = Color.Green
-                                )
-                            )
-                            Spacer(modifier = Modifier.height(25.dp))
-                            LinearProgressIndicator(
-                                color = Color.Green,
-                                trackColor = Color.Green,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 32.dp)
-                            )
-                        }
-                        Text(
-                            text = "© C0MPU73R PR09R4M CHARITY",
-                            modifier = Modifier.align(Alignment.BottomCenter),
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    }
-                }
+                MenuScreen()
             }
         }
-        Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }, 3000)
+    }
+}
+
+@Composable
+fun MenuScreen() {
+    var clickCount by remember { mutableStateOf(0) }
+    val context = LocalContext.current
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            context.startActivity(Intent(context, MenuActivity::class.java))
+        }
+    }
+
+    val hasPermission = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.RECORD_AUDIO
+    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        if (hasPermission) {
+            Text(
+                text = "Permission already granted",
+                fontSize = 20.sp,
+                color = Color.Green
+            )
+        } else {
+            Button(
+                onClick = {
+                    clickCount++
+                    requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                }
+            ) {
+                Text(text = "Request Permission")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Tap the button to grant permission.",
+                fontSize = 20.sp,
+                color = Color.Blue
+            )
+        }
     }
 }

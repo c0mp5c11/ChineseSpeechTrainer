@@ -4,7 +4,9 @@
 
 ##Business Logic
 #start activity
-Show the start screen with help button for 3 seconds, then transition if button not tapped.
+Show the start screen with help button for 3 seconds
+
+#menu activity
 add a button to request permission.
 check for permissions and move on
 

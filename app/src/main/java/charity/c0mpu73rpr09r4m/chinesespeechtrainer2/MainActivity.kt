@@ -33,33 +33,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         // Modern permission launcher
-        val requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-                if (isGranted) {
-                    updateText("Permission granted!")
-                    val speechRecognizer = getSpeechRecognizer()
-                    startListening(speechRecognizer)
-                } else {
-                    updateText("Failed to get permission.")
-                }
-            }
+
 
         setContent {
             ChineseSpeechTrainerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-                    // Check permission at startup
-                    if (ContextCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.RECORD_AUDIO
-                        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-                    ) {
-                        startup()
-                    } else {
-                        // Prompt the user
-                        requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                        updateText("Requesting microphone permission...")
-                    }
+                    val logic = DataLogic()
+                    dictionaryEntry = logic.getTranslation(1, 1)
+                    updateText("${dictionaryEntry.englishWord}\n\n${dictionaryEntry.chineseWord}\n\n${dictionaryEntry.pinyin}\n")
+                    val speechRecognizer = getSpeechRecognizer()
 
                     Box(
                         modifier = Modifier
@@ -81,11 +63,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startup() {
-        val logic = DataLogic()
-        dictionaryEntry = logic.getTranslation(1, 1)
-        updateText("${dictionaryEntry.englishWord}\n\n${dictionaryEntry.chineseWord}\n\n${dictionaryEntry.pinyin}\n")
-        val speechRecognizer = getSpeechRecognizer()
-        startListening(speechRecognizer)
+
     }
 
     private fun getSpeechRecognizer(): SpeechRecognizer {
