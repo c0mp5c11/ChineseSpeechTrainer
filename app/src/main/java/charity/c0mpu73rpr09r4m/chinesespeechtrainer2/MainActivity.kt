@@ -25,49 +25,46 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import charity.c0mpu73rpr09r4m.chinesespeechtrainer2.ui.theme.ChineseSpeechTrainerTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-    // screen text
     private var displayText by mutableStateOf("")
+    private var displayColor by mutableStateOf(Color.Green)
+    private lateinit var speechRecognizer: SpeechRecognizer
+    private var displayWord: String = "你好"
+    private var isMatch: Boolean = false;
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Modern permission launcher
         val requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                updateText("Requesting microphone permission...", Color.Yellow)
+
                 if (isGranted) {
-                    updateText("Permission granted!")
-                    val speechRecognizer = getSpeechRecognizer()
-                    startListening(speechRecognizer)
+                    updateText("Permission granted!", Color.Green)
+                    initSpeechRecognizer()
                 } else {
-                    updateText("Failed to get permission.\n\n未能获得许可。\n\nWèi néng huòdé xǔkě.")
+                    updateText(
+                        "Failed to get permission.\n\n未能获得许可。\n\nWèi néng huòdé xǔkě.",
+                        Color.Red
+                    )
                 }
             }
 
         setContent {
             ChineseSpeechTrainerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-                    // Check permission at startup
                     if (ContextCompat.checkSelfPermission(
                             this,
                             Manifest.permission.RECORD_AUDIO
                         ) == android.content.pm.PackageManager.PERMISSION_GRANTED
                     ) {
-                        updateText("Hello World\n\n你好 世界\n\nNǐ hǎo Shìjiè\n")
-                        val speechRecognizer = getSpeechRecognizer()
-                        startListening(speechRecognizer)
+                        initSpeechRecognizer()
                     } else {
-                        // Prompt the user
                         requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                        updateText("Requesting microphone permission...")
                     }
 
                     Box(
@@ -80,7 +77,7 @@ class MainActivity : ComponentActivity() {
                         Text(
                             text = displayText,
                             fontSize = 32.sp,
-                            color = Color.Green,
+                            color = displayColor,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -90,72 +87,63 @@ class MainActivity : ComponentActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private fun getSpeechRecognizer(): SpeechRecognizer {
-        // Use cloud recognizer for reliability
-        val result = SpeechRecognizer.createSpeechRecognizer(this)
+    private fun initSpeechRecognizer() {
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
 
-        result.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {
-                updateText("onReadyForSpeech")
-            }
+        speechRecognizer.setRecognitionListener(object : RecognitionListener {
+            override fun onResults(bundle: Bundle?) {
+                val matches = bundle?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
 
-            override fun onBeginningOfSpeech() {
-                updateText("onBeginningOfSpeech")
-            }
-
-            override fun onRmsChanged(rmsdB: Float) {
-                updateText("onRmsChanged: $rmsdB")
-            }
-
-            override fun onBufferReceived(buffer: ByteArray?) {
-                updateText("onBufferReceived")
-            }
-
-            override fun onEndOfSpeech() {
-                updateText("onEndOfSpeech")
-            }
-
-            override fun onError(error: Int) {
-                updateText("Error code: $error")
-            }
-
-            override fun onResults(results: Bundle?) {
-                val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 matches?.forEach { word ->
-                    updateText("Recognized: $word")
-
-                    if (word.contains("你好 世界")) {
-                        updateText("Match found: 你好 世界")
+                    if (word.contains(displayWord)) {
+                        updateText("Match found: $displayWord", Color.Green)
+                        isMatch = true
                     }
+                }
+
+                speechRecognizer.destroy()
+            }
+
+            override fun onReadyForSpeech(params: Bundle?) {
+                if(isMatch) {
+                    updateText(displayWord, Color.Green)
+                    displayWord = getWord()
+                }
+                else {
+                    updateText(displayWord, Color.White)
                 }
             }
 
-            override fun onPartialResults(partialResults: Bundle?) {
-                updateText("onPartialResults")
-            }
-
-            override fun onEvent(eventType: Int, params: Bundle?) {
-                updateText("onEvent")
-            }
+            override fun onError(error: Int) { }
+            override fun onPartialResults(bundle: Bundle?) { }
+            override fun onEndOfSpeech() {}
+            override fun onBeginningOfSpeech() {}
+            override fun onBufferReceived(buffer: ByteArray?) {}
+            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onEvent(eventType: Int, params: Bundle?) {}
         })
 
-        return result
-    }
-
-    private fun startListening(speechRecognizer: SpeechRecognizer) {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "zh-CN") // Chinese (Mandarin)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "zh-CN")
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
             )
+            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         }
+
         speechRecognizer.startListening(intent)
     }
 
-    private fun updateText(text: String) {
-        lifecycleScope.launch(Dispatchers.Main) {
-            displayText = text
-        }
+    private fun getWord(): String {
+        //todo: generate from db file
+        val result = displayWord + "1"
+
+        return result
+    }
+
+    private fun updateText(text: String, color: Color) {
+        displayText = text
+        displayColor = color
     }
 }
