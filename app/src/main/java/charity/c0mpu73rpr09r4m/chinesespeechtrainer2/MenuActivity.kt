@@ -3,6 +3,7 @@ package charity.c0mpu73rpr09r4m.chinesespeechtrainer2
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -38,28 +39,29 @@ class MenuActivity : ComponentActivity() {
                     )
                 }
 
-                if(permissionGranted) {
+                if (permissionGranted) {
                     context.startActivity(Intent(context, MainActivity::class.java))
-                }
-                else {
+                } else {
                     val requestPermissionLauncher = rememberLauncherForActivityResult(
                         contract = ActivityResultContracts.RequestPermission()
                     ) { granted ->
                         permissionGranted = granted
                     }
 
-                    if(permissionGranted) {
+                    if (permissionGranted) {
                         context.startActivity(Intent(context, MainActivity::class.java))
-                    }
-                    else {
+                    } else {
                         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                             Box(
-                                modifier = Modifier.padding(innerPadding)
+                                modifier = Modifier
+                                    .padding(innerPadding)
                                     .fillMaxSize()
                                     .padding(16.dp)
                             ) {
                                 Column(
-                                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(16.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
@@ -71,8 +73,24 @@ class MenuActivity : ComponentActivity() {
 
                                     Spacer(modifier = Modifier.height(50.dp))
 
-                                    Button(onClick = { requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }) {
+                                    Button(
+                                        onClick = {
+                                            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                        }
+                                    ) {
                                         Text("Grant Permission")
+                                    }
+
+                                    Spacer(modifier = Modifier.height(20.dp))
+
+                                    Button(
+                                        onClick = {
+                                            // Launch system activity to install voice data (Chinese voice can be selected there)
+                                            val installIntent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
+                                            context.startActivity(installIntent)
+                                        }
+                                    ) {
+                                        Text("Install Voice")
                                     }
                                 }
                             }
