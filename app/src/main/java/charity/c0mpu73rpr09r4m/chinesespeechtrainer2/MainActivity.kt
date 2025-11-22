@@ -1,6 +1,5 @@
 package charity.c0mpu73rpr09r4m.chinesespeechtrainer2
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -41,8 +40,6 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
 
     private var displayText by mutableStateOf("")
     private var translation: Translation? = null
-    private val DICTIONARY_FOLDER_SOURCE = "zh_cn.cd_cont_5000"
-    private val DICTIONARY_FOLDER_TARGET = "pocketsphinx"
     private val DICTIONARY_FILE = "zh_cn.dic"
     private val MAX_TRY_COUNT = 5
     private val threshold = 4.885e-16f
@@ -54,8 +51,8 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
     private var tryCount: Int = 1
     private var isSphinxInitialized: Boolean = false
     private var isTtsInitialized: Boolean = false
-
     private val dataLogic: DataLogic = DataLogic()
+    private val speechLogic: SpeechLogic = SpeechLogic()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,9 +110,8 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
 
         Thread {
             try {
-                val assetsDir = File(filesDir, DICTIONARY_FOLDER_TARGET)
-                copyFolderToFiles(this,DICTIONARY_FOLDER_SOURCE, DICTIONARY_FOLDER_TARGET)
-                setupRecognizer(assetsDir)
+                val speechFolder = speechLogic.copyFolder(this)
+                setupRecognizer(speechFolder)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -171,14 +167,16 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
     }
 
     @Throws(IOException::class)
-    private fun setupRecognizer(assetsDir: File) {
-        val setup = SpeechRecognizerSetup.defaultSetup()
-        setup.setKeywordThreshold(threshold)
-        setup.setAcousticModel(File(assetsDir, DICTIONARY_FOLDER_SOURCE))
-        setup.setDictionary(File(assetsDir, DICTIONARY_FILE))
-        speechRecognizer = setup.recognizer
-        speechRecognizer?.addListener(this)
-        isSphinxInitialized = true
+    private fun setupRecognizer(speechFolder: File?) {
+        if(speechFolder != null) {
+            val setup = SpeechRecognizerSetup.defaultSetup()
+            setup.setKeywordThreshold(threshold)
+            setup.setAcousticModel(speechFolder)
+            setup.setDictionary(File(speechFolder, DICTIONARY_FILE))
+            speechRecognizer = setup.recognizer
+            speechRecognizer?.addListener(this)
+            isSphinxInitialized = true
+        }
     }
 
     private fun displayNext() {
@@ -219,33 +217,4 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
     override fun onError(error: Exception?) {}
     override fun onTimeout() {}
 
-    fun copyFolderToFiles(context: Context, assetFolderName: String, targetFolderName: String) {
-        try {
-            val assetManager = context.assets
-            val files = assetManager.list(assetFolderName) ?: return
-            val targetDir = File(context.filesDir, targetFolderName)
-
-            if (!targetDir.exists()) {
-                targetDir.mkdirs()
-            }
-
-            for (fileName in files) {
-                val assetPath = "$assetFolderName/$fileName"
-                val outFile = File(targetDir, fileName)
-                val subFiles = assetManager.list(assetPath)
-
-                if (subFiles != null && subFiles.isNotEmpty()) {
-                    copyFolderToFiles(context, assetPath, "$targetFolderName/$fileName")
-                } else {
-                    assetManager.open(assetPath).use { input ->
-                        outFile.outputStream().use { output ->
-                            input.copyTo(output)
-                        }
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
 }
