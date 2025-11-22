@@ -15,8 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -41,7 +39,7 @@ class MenuActivity : ComponentActivity() {
                 }
 
                 if(permissionGranted) {
-                    context.startActivity(Intent(context, MenuActivity::class.java))
+                    context.startActivity(Intent(context, MainActivity::class.java))
                 }
                 else {
                     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -65,17 +63,17 @@ class MenuActivity : ComponentActivity() {
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
-                                    Button(onClick = { requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }) {
-                                        Text("Grant Permission")
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
                                     Text(
-                                        text = "This feature stops working as designed if denied more than once, but permission can be manually set in the operating system application settings.",
+                                        text = "This feature stops working as designed if denied once, but permission can be manually set in the operating system application settings. Reinstalling this application will restore functionality if the security setting button stops working.",
                                         fontSize = 20.sp,
                                         color = Color.White
                                     )
+
+                                    Spacer(modifier = Modifier.height(50.dp))
+
+                                    Button(onClick = { requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO) }) {
+                                        Text("Grant Permission")
+                                    }
                                 }
                             }
                         }

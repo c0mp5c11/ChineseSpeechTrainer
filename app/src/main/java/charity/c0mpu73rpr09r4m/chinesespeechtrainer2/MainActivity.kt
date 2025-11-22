@@ -1,14 +1,10 @@
 package charity.c0mpu73rpr09r4m.chinesespeechtrainer2
 
-import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,12 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import charity.c0mpu73rpr09r4m.chinesespeechtrainer2.ui.theme.ChineseSpeechTrainerTheme
 
 class MainActivity : ComponentActivity() {
     private var displayText by mutableStateOf("")
-    private lateinit var dictionaryEntry : DictionaryEntry
+    private  var dictionaryEntry : DictionaryEntry? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +31,15 @@ class MainActivity : ComponentActivity() {
             ChineseSpeechTrainerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val logic = DataLogic()
-                    dictionaryEntry = logic.getTranslation(1, 1)
-                    updateText("${dictionaryEntry.englishWord}\n\n${dictionaryEntry.chineseWord}\n\n${dictionaryEntry.pinyin}\n")
+                    dictionaryEntry = logic.getTranslation(this, 0)
+
+                    if(dictionaryEntry == null) {
+                        val intent = Intent(this, WinActivity::class.java)
+                        startActivity(intent)
+                    }
+                    else {
+                        updateText("${dictionaryEntry?.englishWord}\n\n${dictionaryEntry?.chineseWord}\n\n${dictionaryEntry?.pinyin}\n")
+                    }
 
                     Box(
                         modifier = Modifier
