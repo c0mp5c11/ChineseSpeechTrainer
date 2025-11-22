@@ -5,7 +5,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 
 public class DataLogic {
-    private val DATABASE_FILENAME = "database.db"
+    private val fileName = "database.db"
 
     fun getDatabase(context: Context): SQLiteDatabase {
         var dbPath = copyDatabase(context)
@@ -30,19 +30,19 @@ public class DataLogic {
     }
 
     fun copyDatabase(context: Context): String {
-        val dbPath = context.getDatabasePath("database.db")
+        val file = context.getDatabasePath(fileName)
 
-        if (!dbPath.exists()) {
-            dbPath.parentFile?.mkdirs()
+        if (!file.exists()) {
+            file.parentFile?.mkdirs()
 
-            context.assets.open("database.db").use { input ->
-                dbPath.outputStream().use { output ->
+            context.assets.open(fileName).use { input ->
+                file.outputStream().use { output ->
                     input.copyTo(output)
                 }
             }
         }
 
-        return dbPath.path
+        return file.path
     }
 
 }

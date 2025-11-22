@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
                         Text(
                             text = displayText,
                             fontSize = 32.sp,
-                            color = Color.Green,
+                            color = Color.White,
                             textAlign = TextAlign.Center
                         )
                     }
