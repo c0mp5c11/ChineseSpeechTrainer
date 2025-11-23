@@ -82,10 +82,14 @@ class MenuActivity : ComponentActivity() {
                                     }
 
                                     Spacer(modifier = Modifier.height(20.dp))
-
+                                    Text(
+                                        text = "To hear Chinese pronunciation voice data must be installed at the operating system level.",
+                                        fontSize = 20.sp,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(20.dp))
                                     Button(
                                         onClick = {
-                                            // Launch system activity to install voice data (Chinese voice can be selected there)
                                             val installIntent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
                                             context.startActivity(installIntent)
                                         }
