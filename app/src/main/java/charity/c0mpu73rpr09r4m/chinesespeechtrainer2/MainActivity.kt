@@ -90,7 +90,6 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
             }
         }
 
-        // Load first translation text immediately (UI shows something)
         translation = dataLogic.getTranslation(this, 0)
         if (translation != null) {
             updateText("${translation?.englishWord}\n${translation?.chineseWord}\n${translation?.pinyin}")
