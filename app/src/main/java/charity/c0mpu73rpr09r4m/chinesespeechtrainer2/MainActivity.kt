@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -214,15 +215,27 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
     }
 
     private fun announce() {
-        translation?.chineseWord?.let { word ->
-            if (isTtsInitialized) {
-                val result = tts?.setLanguage(Locale.SIMPLIFIED_CHINESE)
+        translation?.englishWord?.let { english ->
+            tts?.language = Locale.ENGLISH
+            tts?.speak(
+                english,
+                TextToSpeech.QUEUE_FLUSH,
+                null,
+                "UTTERANCE_ID_ENGLISH"
+            )
 
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    tts?.setLanguage(Locale.CHINESE)
+            translation?.chineseWord?.let { chinese ->
+                val languageCode = tts?.setLanguage(Locale.SIMPLIFIED_CHINESE)
+                if (languageCode == TextToSpeech.LANG_MISSING_DATA ||
+                    languageCode == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    tts?.language = Locale.CHINESE
                 }
-
-                tts?.speak(word, TextToSpeech.QUEUE_FLUSH, null, "UTTERANCE_ID_$word")
+                tts?.speak(
+                    chinese,
+                    TextToSpeech.QUEUE_ADD,
+                    null,
+                    "UTTERANCE_ID_CHINESE"
+                )
             }
         }
     }
