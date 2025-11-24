@@ -83,7 +83,7 @@ class MenuActivity : ComponentActivity() {
 
                                     Spacer(modifier = Modifier.height(20.dp))
                                     Text(
-                                        text = "To hear Chinese pronunciation voice data must be installed at the operating system level.",
+                                        text = "To hear audible Chinese pronunciation, voice data must be installed at the operating system level. This may be in addition to US English",
                                         fontSize = 20.sp,
                                         color = Color.White
                                     )
