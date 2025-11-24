@@ -73,9 +73,5 @@ class WinActivity : ComponentActivity() {
                 }
             }
         }
-        Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, MenuActivity::class.java)
-            startActivity(intent)
-        }, 3000)
     }
 }
