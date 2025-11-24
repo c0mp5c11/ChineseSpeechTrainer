@@ -11,14 +11,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import charity.c0mpu73rpr09r4m.chinesespeechtrainer2.ui.theme.ChineseSpeechTrainerTheme
 
 class MenuActivity : ComponentActivity() {
@@ -30,95 +28,78 @@ class MenuActivity : ComponentActivity() {
             ChineseSpeechTrainerTheme {
                 val context = LocalContext.current
 
-                var permissionGranted by remember {
-                    mutableStateOf(
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.RECORD_AUDIO
-                        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-                    )
-                }
+                val requestPermissionLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission()
+                ) { }
 
-                if (permissionGranted) {
-                    context.startActivity(Intent(context, MainActivity::class.java))
-                } else {
-                    val requestPermissionLauncher = rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.RequestPermission()
-                    ) { granted ->
-                        permissionGranted = granted
-                    }
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "This feature stops working as designed if granted or denied once, but permission can be manually set in the operating system application settings. Reinstalling this application will restore functionality if the security setting button stops working.",
+                                fontSize = 20.sp,
+                                color = Color.White
+                            )
 
-                    if (permissionGranted) {
-                        context.startActivity(Intent(context, MainActivity::class.java))
-                    } else {
-                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                            Box(
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .fillMaxSize()
-                                    .padding(16.dp)
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Button(
+                                onClick = {
+                                    requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                },
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = "This feature stops working as designed if denied once, but permission can be manually set in the operating system application settings. Reinstalling this application will restore functionality if the security setting button stops working.",
-                                        fontSize = 20.sp,
-                                        color = Color.White
-                                    )
+                                Text("Grant Permission")
+                            }
 
-                                    Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                                    Button(
-                                        onClick = {
-                                            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                                        }
-                                    ) {
-                                        Text("Grant Permission")
-                                    }
+                            Text(
+                                text = "To hear audible Chinese pronunciation, its voice data must be installed at the operating system level. This may be in addition to US English",
+                                fontSize = 20.sp,
+                                color = Color.White
+                            )
 
-                                    Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                                    Text(
-                                        text = "To hear audible Chinese pronunciation, voice data must be installed at the operating system level. This may be in addition to US English",
-                                        fontSize = 20.sp,
-                                        color = Color.White
-                                    )
+                            Button(
+                                onClick = {
+                                    val installIntent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
+                                    context.startActivity(installIntent)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Install Voice")
+                            }
 
-                                    Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                                    Button(
-                                        onClick = {
-                                            val installIntent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
-                                            context.startActivity(installIntent)
-                                        }
-                                    ) {
-                                        Text("Install Voice")
-                                    }
+                            Text(
+                                text = "Speak Mandarin Chinese language in this United States English training word game.",
+                                fontSize = 20.sp,
+                                color = Color.White
+                            )
 
-                                    Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                                    Text(
-                                        text = "Speak Chinese language in this training word game.",
-                                        fontSize = 20.sp,
-                                        color = Color.White
-                                    )
-
-                                    Spacer(modifier = Modifier.height(20.dp))
-
-                                    Button(
-                                        onClick = {
-                                            val installIntent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
-                                            context.startActivity(installIntent)
-                                        }
-                                    ) {
-                                        Text("Start")
-                                    }
-                                }
+                            Button(
+                                onClick = {
+                                    context.startActivity(Intent(context, MainActivity::class.java))
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Start")
                             }
                         }
                     }
