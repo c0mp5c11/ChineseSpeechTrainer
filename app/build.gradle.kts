@@ -14,8 +14,8 @@ android {
         applicationId = "charity.c0mpu73rpr09r4m.chinesespeechtrainer2"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
