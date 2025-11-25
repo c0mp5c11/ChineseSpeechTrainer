@@ -79,6 +79,7 @@ class StartActivity : ComponentActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, MenuActivity::class.java)
             startActivity(intent)
+            finish()
         }, 3000)
     }
 }
