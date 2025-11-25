@@ -50,7 +50,7 @@ class StartActivity : ComponentActivity() {
                         )
                         {
                             Text(
-                                text = "Chinese Speech Trainer",
+                                text = "Chinese Speech Trainer 2",
                                 fontSize = 32.sp,
                                 style = TextStyle(
                                     fontFamily = fontFamily,
