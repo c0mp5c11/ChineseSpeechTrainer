@@ -91,11 +91,11 @@ class MainActivity : ComponentActivity(), RecognitionListener, TextToSpeech.OnIn
                     recognizer = SpeechRecognizerSetup.defaultSetup()
                         .setAcousticModel(File(filesDir, "zh-cn"))
                         .setDictionary(File(filesDir, "zh_cn.dic"))
+                        .setKeywordThreshold(1e-60f)
                         .recognizer
 
                     recognizer?.addListener(this)
                     isSphinxInitialized = true
-
                 }
                 refresh()
             } catch (e: IOException) {
