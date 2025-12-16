@@ -2,13 +2,13 @@
 .DS_Store
 /build
 /captures
-.externalNativeBuild
-.cxx
-local.properties
-.aab
 /.gradle
 /.idea
 /.kotlin
 /local.properties
 /app/release
 /app/.gradle
+.externalNativeBuild
+.cxx
+local.properties
+.aab
