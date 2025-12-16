@@ -1,12 +1,4 @@
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
 .DS_Store
 /build
 /captures
@@ -14,7 +6,9 @@
 .cxx
 local.properties
 .aab
-.idea
-/app/release
-/app/release/release/app-release.aab
+/.gradle
+/.idea
 /.kotlin
+/local.properties
+/app/release
+/app/.gradle
